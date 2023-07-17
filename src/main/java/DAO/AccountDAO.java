@@ -20,7 +20,7 @@ public class AccountDAO {
 
         try {
 
-            String sql = "INSERT INTO account (username, password) VALUES (?, ?)" ;
+            String sql = "INSERT INTO account (username, password) VALUES (?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             preparedStatement.setString(1, account.getUsername());
@@ -41,9 +41,10 @@ public class AccountDAO {
                 return newAccount;
             }
 
-        }catch(SQLException e){
+        } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
+        
         //return null if the above try{} failed.
         return null;
     }
@@ -54,7 +55,7 @@ public class AccountDAO {
 
         try {
 
-            String sql = "SELECT * FROM account WHERE username = ? AND password = ?" ;
+            String sql = "SELECT * FROM account WHERE username = ? AND password = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
             preparedStatement.setString(1, account.getUsername());
@@ -67,9 +68,10 @@ public class AccountDAO {
                 return newAccount;
             }
 
-        }catch(SQLException e){
+        } catch(SQLException e) {
             System.out.println(e.getMessage());
         }
+
         //return null if the above try{} failed.
         return null;
     }
