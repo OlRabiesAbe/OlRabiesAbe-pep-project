@@ -29,6 +29,7 @@ public class AccountDAO {
             preparedStatement.executeUpdate();
             
             //Whole-ass second query to get newly added account. There has gotta be a better way to do this.
+            //If i wanted to, i could replace this with a this.loginAccount(account), but that would be a poor solution wouldn't it.
             sql = "SELECT * FROM account WHERE username = ? AND password = ?"; 
             preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setString(1, account.getUsername());
