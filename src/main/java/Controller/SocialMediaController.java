@@ -6,7 +6,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import Service.AccountService;
+import Service.MessageService;
 import Model.Account;
+import Model.Message;
 
 /**
  * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
@@ -15,9 +17,11 @@ import Model.Account;
  */
 public class SocialMediaController {
     AccountService accountService;
+    MessageService messageService;
     
     public SocialMediaController() {
         accountService = new AccountService();
+        messageService = new MessageService();
     }
 
     public Javalin startAPI() {
