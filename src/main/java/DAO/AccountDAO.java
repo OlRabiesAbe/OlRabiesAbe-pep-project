@@ -7,8 +7,12 @@ import java.sql.*;
 
 public class AccountDAO {
     
-    /*
-     * @TODO AccountDAO.registerAccount doesn't return the new account. I think it just needs to do a second query to get the added account.
+    /*  Registers a new account.
+
+     *  ISSUE: Runs a whole second query to retrieve and return the newly added account. This is the simplest way to do this afaik.
+     * 
+     *  Idk how this method works when the account is a duplicate. It passes the tests, but I don't know how. 
+     *  It might be triggering an SQLException? This might be kicking it out of the try{}, and thus returning null.
      */
     public Account registerAccount(Account account) {
 
@@ -31,16 +35,15 @@ public class AccountDAO {
             preparedStatement.setString(2, account.getPassword());
             ResultSet rs = preparedStatement.executeQuery();
 
-            if(rs.next()) {
+            if(rs.next()) { //return newly added user.
                 Account newAccount = new Account(rs.getInt("account_id"), rs.getString("username"), rs.getString("password"));
-                System.out.println(newAccount.toString());
                 return newAccount;
             }
 
         }catch(SQLException e){
             System.out.println(e.getMessage());
         }
-
+        //return null if the above try{} failed.
         return null;
     }
 
