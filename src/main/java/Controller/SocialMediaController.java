@@ -24,13 +24,12 @@ public class SocialMediaController {
         Javalin app = Javalin.create();
 
         app.post("/register", this::registerAccountHandler);
+        app.post("/login", this::loginAccountHandler);
 
         return app;
     }
 
-    /**
-     * @param context The Javalin Context object manages information about both the HTTP request and response.
-     */
+
     private void registerAccountHandler(Context ctx) throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
 
@@ -43,6 +42,21 @@ public class SocialMediaController {
             ctx.status(200);
         }else{
             ctx.status(400);
+        }
+    }
+
+    private void loginAccountHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        Account account = mapper.readValue(ctx.body(), Account.class);
+
+        Account loggedInAccount = accountService.loginAccount(account);
+
+        if(loggedInAccount != null){
+            ctx.json(mapper.writeValueAsString(loggedInAccount));
+            ctx.status(200);
+        }else{
+            ctx.status(401);
         }
     }
 

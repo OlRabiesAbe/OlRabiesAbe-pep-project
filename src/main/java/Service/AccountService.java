@@ -19,4 +19,10 @@ public class AccountService {
         return accountDAO.registerAccount(account);
         //return new Account(2, "username", "password");
     }
+
+    public Account loginAccount(Account account) {
+
+        return accountDAO.loginAccount(account);
+
+    }
 }
