@@ -17,5 +17,6 @@ public class AccountService {
             return null;
 
         return accountDAO.registerAccount(account);
+        //return new Account(2, "username", "password");
     }
 }

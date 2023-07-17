@@ -38,7 +38,7 @@ public class SocialMediaController {
 
         Account registeredAccount = accountService.registerAccount(account);
 
-        if(registeredAccount!=null){
+        if(registeredAccount != null){
             ctx.json(mapper.writeValueAsString(registeredAccount)); //"the response body should contain a JSON of the Account, including its account_id."
             ctx.status(200);
         }else{
