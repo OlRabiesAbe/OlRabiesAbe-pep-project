@@ -4,6 +4,7 @@ import DAO.AccountDAO;
 import Model.Account;
 
 public class AccountService {
+    
     private AccountDAO accountDAO;
 
     public AccountService() {
@@ -21,8 +22,6 @@ public class AccountService {
     }
 
     public Account loginAccount(Account account) {
-
         return accountDAO.loginAccount(account);
-
     }
 }

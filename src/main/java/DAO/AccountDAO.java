@@ -8,11 +8,7 @@ import java.sql.*;
 public class AccountDAO {
     
     /*  Registers a new account.
-
      *  ISSUE: Runs a whole second query to retrieve and return the newly added account. This is the simplest way to do this afaik.
-     * 
-     *  Idk how this method works when the account is a duplicate. It passes the tests, but I don't know how. 
-     *  It might be triggering an SQLException? This might be kicking it out of the try{}, and thus returning null.
      */
     public Account registerAccount(Account account) {
 
@@ -23,7 +19,7 @@ public class AccountDAO {
             String sql = "INSERT INTO account (username, password) VALUES (?, ?)";
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            preparedStatement.setString(1, account.getUsername());
+            preparedStatement.setString(1, account.getUsername());//editing sql with specifics of this call
             preparedStatement.setString(2, account.getPassword());
 
             preparedStatement.executeUpdate();
@@ -58,7 +54,7 @@ public class AccountDAO {
             String sql = "SELECT * FROM account WHERE username = ? AND password = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
-            preparedStatement.setString(1, account.getUsername());
+            preparedStatement.setString(1, account.getUsername());//editing sql with specifics of this call
             preparedStatement.setString(2, account.getPassword());
 
             ResultSet rs = preparedStatement.executeQuery();
