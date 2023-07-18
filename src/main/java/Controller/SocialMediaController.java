@@ -10,11 +10,7 @@ import Service.MessageService;
 import Model.Account;
 import Model.Message;
 
-/**
- * TODO: You will need to write your own endpoints and handlers for your controller. The endpoints you will need can be
- * found in readme.md as well as the test cases. You should
- * refer to prior mini-project labs and lecture materials for guidance on how a controller may be built.
- */
+
 public class SocialMediaController {
     AccountService accountService;
     MessageService messageService;
@@ -29,6 +25,9 @@ public class SocialMediaController {
 
         app.post("/register", this::registerAccountHandler);
         app.post("/login", this::loginAccountHandler);
+
+        app.post("/messages", this::postMessageHandler);
+        
 
         return app;
     }
@@ -61,6 +60,21 @@ public class SocialMediaController {
             ctx.status(200);
         }else{
             ctx.status(401);
+        }
+    }
+
+    private void postMessageHandler(Context ctx) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+
+        Message msg = mapper.readValue(ctx.body(), Message.class);
+
+        Message postedMsg = messageService.postMessage(msg);
+
+        if(postedMsg != null){
+            ctx.json(mapper.writeValueAsString(postedMsg));
+            ctx.status(200);
+        }else{
+            ctx.status(400);
         }
     }
 
