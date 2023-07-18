@@ -84,7 +84,7 @@ public class SocialMediaController {
 
         ObjectMapper mapper = new ObjectMapper();
 
-        ArrayList messageList = messageService.getAllMessages();
+        ArrayList<Message> messageList = messageService.getAllMessages();
 
         ctx.json(mapper.writeValueAsString(messageList));
         ctx.status(200);
