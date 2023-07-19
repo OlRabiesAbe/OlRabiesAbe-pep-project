@@ -103,7 +103,7 @@ public class MessageDAO {
 
             if(rs.next()) { //return message.
                 Message msg = new Message(rs.getInt("message_id"), rs.getInt("posted_by"),
-                                                    rs.getString("message_text"), rs.getLong("time_posted_epoch"));
+                                            rs.getString("message_text"), rs.getLong("time_posted_epoch"));
                 return msg;
             }
 
@@ -112,6 +112,50 @@ public class MessageDAO {
         }
 
         return null;//return null if try catch fails
+    }
+
+    public Message deleteMessageById(int message_id) {
+
+        Connection connection = ConnectionUtil.getConnection();
+
+        try {
+
+            /*  We need to get the message before we delete it. this tells us if it's in the database, 
+             *  and allows us to return it in the case of successful deletion
+            */
+            String sql = "SELECT * FROM message WHERE message_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            preparedStatement.setInt(1, message_id);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            Message msg;
+            if(rs.next()) { //saving msg
+                msg = new Message(rs.getInt("message_id"), rs.getInt("posted_by"),
+                                    rs.getString("message_text"), rs.getLong("time_posted_epoch"));
+            } else {
+                msg = null;
+            }
+
+            // the deletion
+            sql = "DELETE FROM message WHERE message_id = ?";
+            preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            preparedStatement.setInt(1, message_id);
+
+            preparedStatement.executeUpdate(); 
+            /*  We could use the int returned by execute update to check whether the delete went through,
+             *  but I think it's good enough just returning msg from the SELECT call
+            */
+
+            return msg;
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;//just return null if try catch fails
     }
 
 }

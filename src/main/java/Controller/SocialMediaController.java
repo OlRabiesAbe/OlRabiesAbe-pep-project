@@ -30,6 +30,7 @@ public class SocialMediaController {
         app.post("/messages", this::postMessageHandler);
         app.get("/messages", this::getAllMessagesHandler);
         app.get("messages/{message_id}", this::getMessageByIdHandler);
+        app.delete("messages/{message_id}", this::deleteMessageByIdHandler);
         
 
         return app;
@@ -104,6 +105,22 @@ public class SocialMediaController {
         } else { //return empty json if the message comes back null (not in database)
             ctx.json("");
         }
-        ctx.status(200);
+        ctx.status(200); //always 200
+    }
+
+    private void deleteMessageByIdHandler(Context ctx) throws JsonProcessingException, NumberFormatException { //NumberFormatException because Integer.parseInt
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+
+        Message msg = messageService.deleteMessageById(message_id);
+
+        if(msg != null) {
+            ctx.json(mapper.writeValueAsString(msg));
+        } else { //return empty json if the message comes back null (not in database)
+            ctx.json("");
+        }
+        ctx.status(200); //always 200
     }
 }
