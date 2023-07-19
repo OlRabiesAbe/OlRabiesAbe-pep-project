@@ -42,4 +42,9 @@ public class MessageService {
 
         return messageDAO.patchMessageTextById(message_id, newMessage_text);
     }
+
+    public ArrayList<Message> getAllMessagesByAccountId(int account_id) {
+        return messageDAO.getAllMessagesByAccountId(account_id);
+    }
+    
 }

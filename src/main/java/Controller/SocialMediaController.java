@@ -32,12 +32,14 @@ public class SocialMediaController {
         app.get("messages/{message_id}", this::getMessageByIdHandler);
         app.delete("messages/{message_id}", this::deleteMessageByIdHandler);
         app.patch("/messages/{message_id}", this::patchMessageTextByIdHandler);
-        
+        app.get("/accounts/{account_id}/messages", this::getAllMessagesByAccountIdHandler);
 
         return app;
     }
 
-
+    /*
+     * Inserts an account into the database.
+     */
     private void registerAccountHandler(Context ctx) throws JsonProcessingException {
         
         ObjectMapper mapper = new ObjectMapper();
@@ -53,6 +55,10 @@ public class SocialMediaController {
         }
     }
 
+    /*
+     * Logs into associated account, should the username and password match.
+     * Doesn't actually do anything, this is basically just a select-where call.
+     */
     private void loginAccountHandler(Context ctx) throws JsonProcessingException {
         
         ObjectMapper mapper = new ObjectMapper();
@@ -68,6 +74,9 @@ public class SocialMediaController {
         }
     }
 
+    /*
+     * Inserts the provided message into the database.
+     */
     private void postMessageHandler(Context ctx) throws JsonProcessingException {
         
         ObjectMapper mapper = new ObjectMapper();
@@ -82,7 +91,10 @@ public class SocialMediaController {
             ctx.status(400);
         }
     }
-
+    
+    /*
+     * Retrieves all messages in the database as an ArrayList.
+     */
     private void getAllMessagesHandler(Context ctx) throws JsonProcessingException {
 
         ObjectMapper mapper = new ObjectMapper();
@@ -93,6 +105,9 @@ public class SocialMediaController {
         ctx.status(200);
     }
 
+    /*
+     * Retrieves the message associated with the provided id.
+     */
     private void getMessageByIdHandler(Context ctx) throws JsonProcessingException, NumberFormatException { //NumberFormatException because Integer.parseInt
 
         ObjectMapper mapper = new ObjectMapper();
@@ -109,6 +124,11 @@ public class SocialMediaController {
         ctx.status(200); //always 200
     }
 
+    /*
+     * Deletes the message with the associated id.
+     * Returns an empty Json object if the message didn't exist in the first place,
+     * otherwise the Json contains the new message.
+     */
     private void deleteMessageByIdHandler(Context ctx) throws JsonProcessingException, NumberFormatException { //NumberFormatException because Integer.parseInt
 
         ObjectMapper mapper = new ObjectMapper();
@@ -125,14 +145,14 @@ public class SocialMediaController {
         ctx.status(200); //always 200
     }
 
-    
+    /*
+     * Replaces the message_text of the message with the associated message_id.
+     */
     private void patchMessageTextByIdHandler(Context ctx) throws JsonProcessingException, NumberFormatException { //NumberFormatException because Integer.parseInt
 
         ObjectMapper mapper = new ObjectMapper();
 
         int message_id = Integer.parseInt(ctx.pathParam("message_id"));
-        /* the below line might not work
-           i don't know in what way the message_text is contained in ctx, or if this is a valid way to extract it */
         String newMessage_text = mapper.readValue(ctx.body(), Message.class).getMessage_text();
 
         Message msg = messageService.patchMessageTextById(message_id, newMessage_text);
@@ -144,4 +164,22 @@ public class SocialMediaController {
             ctx.status(400);
         }
     }
+
+    /*
+     * Retrieves all messages where posted_by equals the provided account_id.
+     * Returns an empty list if there's no messages by the account or the account doesn't exist.
+     * There's no outwardly visible difference between these two cases.
+     */
+    private void getAllMessagesByAccountIdHandler(Context ctx) throws JsonProcessingException, NumberFormatException { //NumberFormatException because Integer.parseInt
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        int account_id = Integer.parseInt(ctx.pathParam("account_id"));
+
+        ArrayList<Message> messageList = messageService.getAllMessagesByAccountId(account_id);
+
+        ctx.json(mapper.writeValueAsString(messageList));
+        ctx.status(200); //always 200
+    }
+    
 }
