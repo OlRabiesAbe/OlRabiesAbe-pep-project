@@ -32,7 +32,7 @@ public class MessageDAO {
 
             preparedStatement.executeUpdate();
             
-            //Whole-ass second query to get newly added message. There has gotta be a better way to do this.
+            //second query to get the newly added message. There has gotta be a better way to do this.
             sql = "SELECT * FROM message WHERE posted_by = ? AND message_text = ? AND time_posted_epoch = ?"; 
             preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             preparedStatement.setInt(1, msg.getPosted_by());
@@ -158,4 +158,63 @@ public class MessageDAO {
         return null;//just return null if try catch fails
     }
 
+    
+    public Message patchMessageTextById(int message_id, String newMessage_text) {
+
+        Connection connection = ConnectionUtil.getConnection();
+
+        try {
+
+            //  retrieving the message in a whole call to see if it's in the database.
+            String sql = "SELECT * FROM message WHERE message_id = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            preparedStatement.setInt(1, message_id);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            /* if rs is empty, the message_id is invalid and the message isn't in the database.
+                therefore, return null. */
+            if(!rs.next()) { 
+                return null;
+            }
+        
+            //the actual updating is next. it's the easiest part.
+            sql = "UPDATE message SET message_text = ? WHERE message_id = ?";
+            preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            preparedStatement.setString(1, newMessage_text);
+            preparedStatement.setInt(2, message_id);
+
+            preparedStatement.executeUpdate();
+
+            //  retrieving the message in a whole third call so we can return it.
+            sql = "SELECT * FROM message WHERE message_id = ?";
+            preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+
+            preparedStatement.setInt(1, message_id);
+
+            rs = preparedStatement.executeQuery();
+
+            //finish up and return block.
+            Message msg;
+            if(rs.next()) { //saving the result into a new Message()
+                msg = new Message(rs.getInt("message_id"), rs.getInt("posted_by"),
+                                    rs.getString("message_text"), rs.getLong("time_posted_epoch"));
+            } else {
+                msg = null; //this check is neccessary, even though we know the message is in the database at this point?
+            }
+
+            // checking whether the retrieved text == the intended newMessage_text. dunno if we even need to do this, but can't hurt right?
+            if(msg.getMessage_text().equals(newMessage_text)) {
+                return msg;
+            } else {
+                return null;
+            }
+
+        } catch(SQLException e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
+    }
 }

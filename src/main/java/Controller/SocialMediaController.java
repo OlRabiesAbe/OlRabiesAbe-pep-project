@@ -31,6 +31,7 @@ public class SocialMediaController {
         app.get("/messages", this::getAllMessagesHandler);
         app.get("messages/{message_id}", this::getMessageByIdHandler);
         app.delete("messages/{message_id}", this::deleteMessageByIdHandler);
+        app.patch("/messages/{message_id}", this::patchMessageTextByIdHandler);
         
 
         return app;
@@ -122,5 +123,25 @@ public class SocialMediaController {
             ctx.json("");
         }
         ctx.status(200); //always 200
+    }
+
+    
+    private void patchMessageTextByIdHandler(Context ctx) throws JsonProcessingException, NumberFormatException { //NumberFormatException because Integer.parseInt
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+        /* the below line might not work
+           i don't know in what way the message_text is contained in ctx, or if this is a valid way to extract it */
+        String newMessage_text = mapper.readValue(ctx.body(), Message.class).getMessage_text();
+
+        Message msg = messageService.patchMessageTextById(message_id, newMessage_text);
+
+        if(msg != null) {
+            ctx.json(mapper.writeValueAsString(msg));
+            ctx.status(200);
+        } else { 
+            ctx.status(400);
+        }
     }
 }
