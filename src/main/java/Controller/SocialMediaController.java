@@ -29,6 +29,7 @@ public class SocialMediaController {
 
         app.post("/messages", this::postMessageHandler);
         app.get("/messages", this::getAllMessagesHandler);
+        app.get("messages/{message_id}", this::getMessageByIdHandler);
         
 
         return app;
@@ -42,10 +43,10 @@ public class SocialMediaController {
 
         Account registeredAccount = accountService.registerAccount(account);
 
-        if(registeredAccount != null){
+        if(registeredAccount != null) {
             ctx.json(mapper.writeValueAsString(registeredAccount)); //"the response body should contain a JSON of the Account, including its account_id."
             ctx.status(200);
-        }else{
+        } else {
             ctx.status(400);
         }
     }
@@ -57,10 +58,10 @@ public class SocialMediaController {
 
         Account loggedInAccount = accountService.loginAccount(account);
 
-        if(loggedInAccount != null){
+        if(loggedInAccount != null) {
             ctx.json(mapper.writeValueAsString(loggedInAccount));
             ctx.status(200);
-        }else{
+        } else {
             ctx.status(401);
         }
     }
@@ -72,10 +73,10 @@ public class SocialMediaController {
 
         Message postedMsg = messageService.postMessage(msg);
 
-        if(postedMsg != null){
+        if(postedMsg != null) {
             ctx.json(mapper.writeValueAsString(postedMsg));
             ctx.status(200);
-        }else{
+        } else {
             ctx.status(400);
         }
     }
@@ -87,6 +88,22 @@ public class SocialMediaController {
         ArrayList<Message> messageList = messageService.getAllMessages();
 
         ctx.json(mapper.writeValueAsString(messageList));
+        ctx.status(200);
+    }
+
+    private void getMessageByIdHandler(Context ctx) throws JsonProcessingException, NumberFormatException { //NumberFormatException because Integer.parseInt
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        int message_id = Integer.parseInt(ctx.pathParam("message_id"));
+
+        Message msg = messageService.getMessageById(message_id);
+
+        if(msg != null) {
+            ctx.json(mapper.writeValueAsString(msg));
+        } else { //return empty json if the message comes back null (not in database)
+            ctx.json("");
+        }
         ctx.status(200);
     }
 }
